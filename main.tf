@@ -79,6 +79,25 @@ resource "aws_dynamodb_table" "data_store" {
   }
 }
 
+resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
+  name   = "lambda-dynamodb-policy"
+  role   = aws_iam_role.lambda_exec.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "dynamodb:UpdateItem",
+          "dynamodb:GetItem",
+        ]
+        Effect   = "Allow"
+        Resource = aws_dynamodb_table.data_store.arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
